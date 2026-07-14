@@ -35,4 +35,19 @@ public class Product {
         return stock;
     }
 
+    public void replaceName(String newName){
+        this.name = newName;
+    }
+
+    public void replaceDesc(String newDesc){
+        this.desc = newDesc;
+    }
+
+    public void replacePrice(double newPrice){
+        this.price = newPrice;
+    }
+
+    public void replaceStock(int newStock){
+        this.stock = newStock;
+    }
 }

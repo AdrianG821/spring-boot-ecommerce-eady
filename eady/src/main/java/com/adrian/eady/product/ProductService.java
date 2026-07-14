@@ -37,7 +37,7 @@ public class ProductService {
     public Product addProduct(Product prod){
         products.add(prod);
 
-        return products.get(products.size() - 1);
+        return prod;
     }
 
     public String deleteProduct(int id) {
@@ -49,6 +49,26 @@ public class ProductService {
         }
 
         return "Product not found";
+    }
+
+    public Product patchProduct(int id, Product prod){
+
+        for(int i = 0; i < products.size(); i++) {
+
+            Product p = products.get(i);
+
+            if(p.getId() == id){
+                p.replaceName(prod.getName());
+                p.replaceDesc(prod.getDesc());
+                p.replacePrice(prod.getPrice());
+                p.replaceStock(prod.getStock());
+
+                return p;
+
+            }
+        }
+
+        return null;
     }
 
 }
