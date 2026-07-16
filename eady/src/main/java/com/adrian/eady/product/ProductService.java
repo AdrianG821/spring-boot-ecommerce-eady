@@ -2,6 +2,7 @@ package com.adrian.eady.product;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -9,66 +10,79 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProductService {
     
-    private List<Product> products ;
+    private final ProductRepository db;
 
-    public ProductService(){
-        products = new ArrayList<>();
-
-        products.add(new Product(1, "Iphone 16 PRO MAX", "This is a phone", 1200, 25)) ;
-        products.add(new Product(2, "Iphone 17 PRO MAX", "This is a phone", 1500, 55));
-        products.add(new Product(3, "Iphone 11 PRO MAX", "This is a phone", 600, 11));
-    }
+    public ProductService(ProductRepository db) { this.db = db; }
 
 
     public List<Product> getAllProducts(){
-        return products;
+        return db.findAll();
     }
 
-    public Product getOneProduct(int id) {
-        for(int i = 0; i < products.size(); i++){
-            if(products.get(i).getId() == id){
-                return products.get(i);
-            }
-        }
+    public Optional<Product> getOneProduct(Long id) {
 
-        return null;
+        
+        try{
+            if(id != null) {
+                return db.findById(id);
+            } else {
+                return Optional.empty();
+            }
+
+        } catch(Exception e) {
+            return Optional.empty();
+        }
     }
 
     public Product addProduct(Product prod){
-        products.add(prod);
+        try{
 
-        return prod;
-    }
-
-    public String deleteProduct(int id) {
-        for(int i = 0; i < products.size(); i ++){
-            if(products.get(i).getId() == id){
-                products.remove(i);
-                return "Product removed";
-            }
+            return db.save(prod);
+        } catch(Exception e) {
+            return null;
         }
 
-        return "Product not found";
+        // return prod;
     }
 
-    public Product patchProduct(int id, Product prod){
+    public String deleteProduct(Long id) {
 
-        for(int i = 0; i < products.size(); i++) {
+        try {
 
-            Product p = products.get(i);
+            db.deleteById(id);
+            return "Product removed";
 
-            if(p.getId() == id){
-                p.replaceName(prod.getName());
-                p.replaceDesc(prod.getDesc());
-                p.replacePrice(prod.getPrice());
-                p.replaceStock(prod.getStock());
-
-                return p;
-
-            }
+        } catch (Exception e) {
+            return e.getMessage();
         }
 
-        return null;
+        
+    }
+
+    public Product patchProduct(Long id, Product prod){
+
+
+        try {
+            Product found = db.findById(id).orElse(null);
+
+            if(found == null){
+                return null;
+            }
+            
+
+            found.replaceName(prod.getName());
+            found.replacePrice(prod.getPrice());
+            found.replaceStock(prod.getStock());
+            found.replaceDesc(prod.getDesc());
+
+
+            return db.save(found);
+
+        } catch(Exception e) {
+            return null;
+        }
+
+
     }
 
 }

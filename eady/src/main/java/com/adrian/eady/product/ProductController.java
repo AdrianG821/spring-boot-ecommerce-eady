@@ -6,6 +6,7 @@ import jakarta.websocket.server.PathParam;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,7 +35,7 @@ public class ProductController {
     }
 
     @GetMapping("/product/{id}")
-    public Product getOneProduct(@PathVariable("id") int id ) {
+    public Optional<Product> getOneProduct(@PathVariable("id") Long id ) {
         
         return service.getOneProduct(id);
     }
@@ -47,13 +48,13 @@ public class ProductController {
     }
 
     @DeleteMapping("/product/delete/{id}")
-    public String deteleProduct(@PathVariable("id") int id) {
+    public String deteleProduct(@PathVariable("id") Long id) {
 
         return service.deleteProduct(id);
     }
 
     @PutMapping("/product/patch/{id}")
-    public Product patchProduct(@PathVariable("id") int id, @RequestBody Product product) {
+    public Product patchProduct(@PathVariable("id") Long id, @RequestBody Product product) {
 
         return service.patchProduct(id, product);
     }

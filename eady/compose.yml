@@ -1,0 +1,16 @@
+services:
+    mysql:
+      image: mysql:8.4
+      container_name: eady_mysql
+      restart: always
+      environment:
+        MYSQL_ROOT_PASSWORD: root_password
+        MYSQL_DATABASE: eady_db
+        MYSQL_USER: user
+        MYSQL_PASSWORD: "1234"
+      ports:
+        - "3309:3306"
+      volumes:
+        - mysql_data:/var/lib/mysql
+volumes:
+  mysql_data:

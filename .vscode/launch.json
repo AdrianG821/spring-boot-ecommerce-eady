@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-EadyApplication<eady>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.adrian.eady.EadyApplication",
+            "projectName": "eady",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

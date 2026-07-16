@@ -1,21 +1,33 @@
 package com.adrian.eady.product;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+
+@Entity
+@Table(name = "products")
 public class Product {
-    private long id;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String name;
-    private String desc;
+    private String description;
     private double price;
     private int stock;
 
-    public Product(long id, String name, String desc, double price, int stock) {
-        this.id = id;
+    public Product() {}
+
+    public Product(String name, String desc, double price, int stock) {
         this.name = name;
-        this.desc = desc;
+        this.description = desc;
         this.price = price;
         this.stock = stock;
     }
 
-    public long getId(){
+    public Long getId(){
         return id;
     }
 
@@ -24,7 +36,7 @@ public class Product {
     }
 
     public String getDesc() {
-        return desc;
+        return description;
     }
 
     public double getPrice() {
@@ -40,7 +52,7 @@ public class Product {
     }
 
     public void replaceDesc(String newDesc){
-        this.desc = newDesc;
+        this.description = newDesc;
     }
 
     public void replacePrice(double newPrice){
