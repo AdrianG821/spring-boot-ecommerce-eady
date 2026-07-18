@@ -2,6 +2,10 @@ package com.adrian.eady.product;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.adrian.eady.product.dto.ProductCreateDTO;
+import com.adrian.eady.product.dto.ProductResponseDTO;
+import com.adrian.eady.product.dto.ProductUpdateDTO;
+
 import jakarta.websocket.server.PathParam;
 
 import java.util.ArrayList;
@@ -30,18 +34,18 @@ public class ProductController {
     }
 
     @GetMapping("/products")
-    public List<Product> getAllProducts() {
+    public List<ProductResponseDTO> getAllProducts() {
         return service.getAllProducts();
     }
 
     @GetMapping("/product/{id}")
-    public Optional<Product> getOneProduct(@PathVariable("id") Long id ) {
+    public ProductResponseDTO getOneProduct(@PathVariable("id") Long id ) {
         
         return service.getOneProduct(id);
     }
 
     @PostMapping("/product/add")
-    public Product addProduct(@RequestBody Product product) {
+    public ProductResponseDTO addProduct(@RequestBody ProductCreateDTO product) {
         //TODO: process POST request
         
         return service.addProduct(product);
@@ -54,7 +58,7 @@ public class ProductController {
     }
 
     @PutMapping("/product/patch/{id}")
-    public Product patchProduct(@PathVariable("id") Long id, @RequestBody Product product) {
+    public ProductResponseDTO patchProduct(@PathVariable("id") Long id, @RequestBody ProductUpdateDTO  product) {
 
         return service.patchProduct(id, product);
     }

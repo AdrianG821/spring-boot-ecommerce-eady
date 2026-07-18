@@ -28,11 +28,12 @@ public class Product {
 
     public Product() {}
 
-    public Product(String name, String desc, double price, int stock) {
-        this.name = name;
-        this.description = desc;
-        this.price = price;
-        this.stock = stock;
+    public Product(String name, String desc, double price, int stock, Category category) {
+        this.name           = name;
+        this.description    = desc;
+        this.price          = price;
+        this.stock          = stock;
+        this.category       = category;
     }
 
     public Long getId(){
@@ -43,7 +44,7 @@ public class Product {
         return name;
     }
 
-    public String getDesc() {
+    public String getDescription() {
         return description;
     }
 
@@ -59,19 +60,19 @@ public class Product {
         return category;
     }
 
-    public void replaceName(String newName){
+    public void setName(String newName){
         this.name = newName;
     }
 
-    public void replaceDesc(String newDesc){
+    public void setDescription(String newDesc){
         this.description = newDesc;
     }
 
-    public void replacePrice(double newPrice){
+    public void setPrice(double newPrice){
         this.price = newPrice;
     }
 
-    public void replaceStock(int newStock){
+    public void setStock(int newStock){
         this.stock = newStock;
     }
     
