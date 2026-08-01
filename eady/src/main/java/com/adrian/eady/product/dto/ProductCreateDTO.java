@@ -1,11 +1,35 @@
 package com.adrian.eady.product.dto;
 
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
+
 public class ProductCreateDTO {
-    private String  name;
-    private String  description;
-    private double  price;
-    private int     stock;
-    private Long     categoryId;
+
+    @NotBlank
+    @Size(min = 4, max = 150)
+    private     String      name;
+
+    @Size(max = 500)
+    private     String      description;
+
+    @NotNull
+    @Positive
+    @DecimalMax("9999.99")
+    private     Double      price;
+
+    @NotNull
+    @PositiveOrZero
+    private     Integer     stock;
+
+    @NotNull
+    @Positive
+    private     Long        categoryId;
 
     public ProductCreateDTO() {}
 
