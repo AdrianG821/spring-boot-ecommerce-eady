@@ -6,16 +6,18 @@ public class OrderCreateDTO {
     private String paymentForm;
     private String address;
     private Double totalPrice;
+
+    private Integer quantity;
+
     private Long userId;
 
     
 
     public OrderCreateDTO() {}
 
-    public OrderCreateDTO(String paymentForm, String address, Double totalPrice,Long userId) {
+    public OrderCreateDTO(String paymentForm, String address, Double totalPrice,Long userId, Integer quantity) {
         this.paymentForm           = paymentForm;
         this.address               = address;
-        this.totalPrice            = totalPrice;
         this.userId                = userId;
     }
 
@@ -28,14 +30,11 @@ public class OrderCreateDTO {
     public String getAddress() {
         return address;
     }
-
-    public Double getTotalPrice() {
-        return totalPrice;
-    }
     
     public Long getUserId() {
         return userId;
     }
+
 
     public void setPaymentForm(String paymentForm){
         this.paymentForm = paymentForm;
@@ -45,11 +44,8 @@ public class OrderCreateDTO {
         this.address = address;
     }
 
-    public void setTotalPrice(double totalPrice){
-        this.totalPrice = totalPrice;
-    }
-
     public void setUserId(Long userId){
         this.userId = userId;
     }
+
 }

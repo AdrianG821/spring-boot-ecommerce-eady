@@ -26,9 +26,8 @@ public class OrderService {
     private final UserRepository  userDb;
     private final CartRepository  cartDb;
     private final OrderItemRepository itemDb;
-    private final ProductRepository productDb;
 
-    public OrderService(OrderRepository db, UserRepository userDb, CartRepository cartDb, OrderItemRepository itemDb, ProductRepository productDb) { this.db = db;  this.userDb = userDb; this.cartDb = cartDb; this.itemDb = itemDb; this.productDb = productDb;}
+    public OrderService(OrderRepository db, UserRepository userDb, CartRepository cartDb, OrderItemRepository itemDb) { this.db = db;  this.userDb = userDb; this.cartDb = cartDb; this.itemDb = itemDb;}
     
     public List<OrderResponseDTO> getAllOrders(Long userId) {
 
@@ -46,25 +45,25 @@ public class OrderService {
 
     }
 
+
+
     public Integer createOrder(OrderCreateDTO create){
-        Order order = null;
-        String paymentForm = create.getPaymentForm();
-        String address = create.getAddress();
-        Boolean active = true;
-
-        if(address == null || address == "") return null;
-        if(paymentForm == null || paymentForm == "") return null;
-
+        if(create == null) return null;
 
         User user = userDb.findById(create.getUserId()).orElse(null);
         if(user == null) return null;
 
         List<Cart> carts = cartDb.findByUserId(user.getId());
 
+        Order order = null;
+        String paymentForm = create.getPaymentForm();
+        String address = create.getAddress();
+        Boolean active = true;
+
         
         List<Long> productIds = carts.stream().map(cart -> cart.getProduct().getId()).toList();
 
-        if(productIds == null) return null;
+        if(productIds.isEmpty()) return null;
 
         
         Double totalPrice = getTotalPrice(carts);
@@ -72,17 +71,16 @@ public class OrderService {
 
         order = new Order(paymentForm, address, totalPrice, user, active);
 
+        db.save(order);
 
-        for(int i = 0; i <= productIds.size(); i++){
+        for(int i = 0; i < productIds.size(); i++){
             if(order == null) return null;
 
-            Long productId = productIds.get(i);
+            Cart actualCart = carts.get(i);
 
-            Product product = productDb.findById(productId).orElse(null);
+            if(actualCart == null) return null;
 
-            if(product == null) return null;
-
-            OrderItem item = new OrderItem(order ,product.getPrice(), product);
+            OrderItem item = new OrderItem(order ,actualCart.getProduct().getPrice(),actualCart.getProduct(), actualCart.getQuantity());
 
             if(item == null) return null;
 
@@ -124,8 +122,8 @@ public class OrderService {
 
         List<Double> prices = carts.stream().map(cart -> cart.getProduct().getPrice()).toList();
 
-        for(int i = 0; i<=prices.size();i++){
-            totalPrice += prices.get(i);
+        for(int i = 0; i < prices.size();i++){
+            totalPrice += prices.get(i) * carts.get(i).getQuantity();
         }
 
         return totalPrice;
