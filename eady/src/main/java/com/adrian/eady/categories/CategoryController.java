@@ -3,11 +3,15 @@ package com.adrian.eady.categories;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.adrian.eady.categories.dto.CategoryResponseDTO;
+
 import jakarta.websocket.server.PathParam;
 
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,20 +36,24 @@ public class CategoryController {
     }
 
     @GetMapping("/get/all")
-    public List<Category> getAllCategories() {
+    public List<CategoryResponseDTO> getAllCategories() {
         return service.getAllCategories();
     }
 
     @GetMapping("/get/{id}")
-    public Optional<Category> getCategoryById(@PathVariable("id") Long id) {
+    public CategoryResponseDTO getCategoryById(@PathVariable("id") Long id) {
         return service.getCategoryById(id);
     }
 
     @PostMapping("/add")
-    public Category addNewCategory(@RequestBody Category cat) {
+    public ResponseEntity<String> addNewCategory(@RequestBody String name) {
         //TODO: process POST request
-        
-        return service.addNewCategory(cat);
+        if(name == null || name == ""){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please provide a valid name for the category!");
+        }
+        String response = service.addNewCategory(name);
+
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/delete/{id}")
@@ -54,11 +62,11 @@ public class CategoryController {
     }
 
     @PutMapping("/update/{id}")
-    public Category updateCategoryById(@PathVariable("id") Long id, @RequestBody Category cat) {
+    public ResponseEntity<String> updateCategoryById(@PathVariable("id") Long id) {
         //TODO: process PUT request
         
-        return service.updateCategoryById(id, cat);
+        String response = service.updateCategoryById(id);
+
+        return ResponseEntity.ok(response);
     }
-    
-    
 }

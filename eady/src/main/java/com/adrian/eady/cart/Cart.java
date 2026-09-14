@@ -31,10 +31,18 @@ public class Cart {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    private Integer quantity;
+
     @CreationTimestamp
     private Date createdAt;
 
     public Cart() {}
+
+    public Cart(User user,Product product, Integer quantity) {
+        this.user      = user;
+        this.product   = product;
+        this.quantity  = quantity;
+    }
 
 
     public Long getId(){
@@ -49,6 +57,10 @@ public class Cart {
         return product;
     }
 
+    public Integer getQuantity() {
+        return quantity;
+    }
+
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -59,6 +71,10 @@ public class Cart {
 
     public void setProduct(Product newProduct) {
         this.product = newProduct;
+    }
+
+    public void setQuantity(Integer newQuantity) {
+        this.quantity = newQuantity;
     }
 
 }

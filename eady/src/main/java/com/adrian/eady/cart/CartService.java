@@ -40,31 +40,66 @@ public class CartService {
 
  
     public String addCartProduct(CartCreateDTO cart) {
-        Long productId = cart.getProductId();
-        Long userId    = cart.getUserId();
+        Long    productId = cart.getProductId();
+        Long    userId    = cart.getUserId();
+        Integer quantity  = cart.getQuantity();
+
+        if(productId == null || productId == 0 || userId == null || userId == 0 || quantity == null || quantity <= 0){
+            return null;
+        }
+        
+        Product product = dbProduct.findById(cart.getProductId()).orElse(null);
+        User    user    = dbUser.findById(cart.getUserId()).orElse(null);
+
+        if(product == null || user == null) {
+            return null;
+        }
+
+        Optional<Cart>              exists  = db.findByUserIdAndProductId(user.getId(), product.getId());
+
+        if(exists.isPresent()) {
+            Cart existingCart = exists.get();
+            existingCart.setQuantity(existingCart.getQuantity() + quantity);
+            db.save(existingCart);
+            return "Quantity added";
+        }
+
+        Cart newCart = new Cart(user,product, quantity);
+
+        db.save(newCart);
+
+        return "Product added succesfully";
+        
+    }
+
+    public String removeCartProduct(CartDeleteDTO dto) {
+        Long productId = dto.getProductId();
+        Long userId    = dto.getUserId();
 
         if(productId == null || productId == 0 || userId == null || userId == 0){
             return null;
         }
-        
-        Optional<Product> product = dbProduct.findById(cart.getProductId());
-        Optional<User>    user    = dbUser.findById(cart.getUserId());
 
-        Cart              exists  = db.findByUserAndProduct(user, product);
 
-        if(exists != null) {
-            return "You already have this product in your cart";
+
+        Product product = dbProduct.findById(productId).orElse(null);
+        User    user    = dbUser.findById(userId).orElse(null);
+
+        if(product == null || user == null) {
+            return null;
+        }
+
+        Optional<Cart>             optionalCart  = db.findByUserIdAndProductId(user.getId(), product.getId());
+
+        Cart exists = optionalCart.orElse(null);
+
+        if(exists == null) {
+            return "You dont have this product in your cart";
         }
         
+        db.deleteById(exists.getId());
 
-        
-
-
-        
-    }
-
-    public String removeCartProduct(CartDeleteDTO delete) {
-
+        return "Product removed succesfully!";
     }
 
     private CartResponseDTO CartMapToDTO(Cart cart) {
@@ -78,7 +113,7 @@ public class CartService {
 
         Long           userId   = user.getId();
 
-        return new CartResponseDTO(cart.getId(), userId, product, cart.getCreatedAt());
+        return new CartResponseDTO(cart.getId(), userId, product, cart.getQuantity() ,cart.getCreatedAt());
 
     }
 
