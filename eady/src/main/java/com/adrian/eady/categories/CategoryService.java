@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.adrian.eady.categories.dto.CategoryResponseDTO;
+
 @Service
 public class CategoryService {
 
@@ -13,31 +15,46 @@ public class CategoryService {
     public CategoryService(CategoryRepository db) { this.db = db; }
 
 
-    public List<Category> getAllCategories () {
+    public List<CategoryResponseDTO> getAllCategories () {
 
         try{
-            return db.findAll();
+            List<Category> categories = db.findAll();
+
+            List<CategoryResponseDTO> response = categories.stream().map( cat -> new CategoryResponseDTO(cat.getId(), cat.getName()) ).toList();
+
+            return response;
 
         } catch(Exception e) {
             return null;
         }
     }
 
-    public Optional<Category> getCategoryById(Long id) {
+    public CategoryResponseDTO getCategoryById(Long id) {
         try{
-            return db.findById(id);
+            Category category = db.findById(id).orElse(null);
+
+            if(category == null) return null;
+            
+            CategoryResponseDTO response = new CategoryResponseDTO(category.getId(), category.getName());
+
+            return response;
+
         } catch(Exception e) {
-            return Optional.empty();
+            return null;
         }
     }
 
     
-    public Category addNewCategory(Category cat) {
+    public String addNewCategory(String name) {
         try{
-            return db.save(cat);
+            Category cat = new Category(name, true);
+            
+            db.save(cat);
+
+            return "Category created!";
 
         } catch(Exception e) {
-            return null;
+            return "Something went wrong!";
         }
 
     }
@@ -61,7 +78,7 @@ public class CategoryService {
         }
     }
     
-    public Category updateCategoryById(Long id, Category cat) {
+    public String updateCategoryById(Long id) {
         try{
             Category found = db.findById(id).orElse(null);
 
@@ -69,14 +86,18 @@ public class CategoryService {
                 return null;
             }
 
-            found.setName(cat.getName());
-            found.setActive(cat.getActive());
+            if(found.getActive() == true){
+                found.setActive(false);
+            } else {
+                found.setActive(true);
+            }
 
-            return db.save(found);
-            
+            db.save(found);
+           
+            return "Category updated!";
 
         } catch(Exception e) {
-            return null;
+            return "Something went wrong!";
         }
     }
 }

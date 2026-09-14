@@ -32,23 +32,25 @@ public class UserController {
     public UserController(UserService service) { this.service = service; }
 
     @GetMapping("/get/all")
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = service.getAllUsers();
+    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
+        List<UserResponseDTO> users = service.getAllUsers();
 
         return ResponseEntity.ok(users);
     }
 
     @PostMapping("/create")
-    public ResponseEntity<User> createNewUser(@Valid @RequestBody UserCreateDTO dto) {
+    public ResponseEntity<String> createNewUser(@Valid @RequestBody UserCreateDTO dto) {
         //TODO: process POST request
 
-        User response = service.createNewUser(dto);
+        String response = service.createNewUser(dto);
 
-        if(response != null) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        if(response == "ok") {
+            return ResponseEntity.status(HttpStatus.CREATED).body("User created succesfully");
+        } else if (response == "exists") {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username or Email already exists");
         }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("User created succesfully");
     }
 
     @PostMapping("/auth")
@@ -58,9 +60,9 @@ public class UserController {
         UserResponseDTO response = service.authMethod(dto);
 
         if(response != null) {
-            ResponseEntity.ok(response);
+            return ResponseEntity.ok(response);
         } else {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         
         
@@ -72,24 +74,24 @@ public class UserController {
         UserResponseDTO response = service.patchUser(dto);
 
         if(response != null) {
-            ResponseEntity.ok(response);
+           return  ResponseEntity.ok(response);
         } else {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+           return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
 
     }
 
     @PostMapping("/activate/{id}")
-    public ResponseEntity<Boolean> activateUser(@PathVariable("id") int id) {
+    public ResponseEntity<Boolean> activateUser(@PathVariable("id") Long id) {
         //TODO: process POST request
 
         Boolean response = service.activateUser(id);
         
         if(response == true) {
-            ResponseEntity.status(HttpStatus.OK).build();
+            return ResponseEntity.status(HttpStatus.OK).build();
         } else {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
     

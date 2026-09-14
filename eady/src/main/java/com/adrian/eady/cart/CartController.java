@@ -9,6 +9,8 @@ import com.adrian.eady.cart.dto.CartResponseDTO;
 
 import jakarta.validation.Valid;
 
+import java.util.List;
+
 import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,21 +36,24 @@ public class CartController {
 
         return ResponseEntity.ok(cart);
     }
+    
 
     @PostMapping("/insert/product")
-    public ResponseEntity<String> addCartProduct(@Valid @RequestBody CartCreateDTO cart) {
+    public ResponseEntity<String> addCartProduct(@Valid @RequestBody CartCreateDTO dto) {
         //TODO: process POST request
-        String response = service.addCartProduct(cart);
+        String response = service.addCartProduct(dto);
         
         if(response == "ok"){
-            ResponseEntity.ok();
+            return ResponseEntity.ok(response);
         } else if(response == "User not found"){
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Product not added");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Product not added");
         }
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/delete/product")
-    public ResponseEntity<String> removeCartProduct(@RequestBody CartDeleteDTO dto) {
+    public ResponseEntity<String> removeCartProduct(@Valid @RequestBody CartDeleteDTO dto) {
         //TODO: process POST request
         
         return ResponseEntity.ok(service.removeCartProduct(dto));

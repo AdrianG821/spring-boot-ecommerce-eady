@@ -22,6 +22,8 @@ public class CartCreateDTO {
     @Positive
     private Long productId;
 
+    private Integer  quantity;
+
     public CartCreateDTO() {}
 
 
@@ -33,6 +35,11 @@ public class CartCreateDTO {
     public Long getProductId() {
         return productId;
     }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
     
     public void setUserId(Long newUserId) {
         this.userId = newUserId;
@@ -42,4 +49,7 @@ public class CartCreateDTO {
         this.productId = newProductId;
     }
 
+    public void setQuantity(Integer newQuantity) {
+        this.quantity = newQuantity;
+    }
 }

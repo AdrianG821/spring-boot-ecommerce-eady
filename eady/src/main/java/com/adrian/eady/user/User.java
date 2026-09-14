@@ -1,5 +1,9 @@
 package com.adrian.eady.user;
 
+import java.sql.Date;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,21 +17,34 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long        id;
-    private String      name;
+    private String      username;
     private String      email;
     private String      passwordHash;
     private String      role;
     private Boolean     active;
+    
+    @CreationTimestamp
+    private Date        createdAt;
 
 
     public User() {}
+
+    public User(String username, String email, String passwordHash, String role) {
+        this.username          =    username;
+        this.email             =    email;
+        this.passwordHash      =    passwordHash;
+        this.role              =    role;
+        this.active            =    true;
+
+    }
+
 
     public Long  getId() {
         return id;
     }
 
-    public String getName(){
-        return name;
+    public String getUsername(){
+        return username;
     }
 
     public String getEmail(){
@@ -46,8 +63,8 @@ public class User {
         return active;
     }
 
-    public void setName(String newName) {
-        this.name = newName;
+    public void setUsername(String newUsername) {
+        this.username = newUsername;
     }
 
     public void setEmail(String newEmail) {

@@ -18,15 +18,18 @@ public class CartResponseDTO {
 
     private ProductCartDTO product;
 
+    private Integer  quantity;
+
     private Date createdAt;
 
     public CartResponseDTO() {  }
 
-    public CartResponseDTO(Long id, Long userId, ProductCartDTO product, Date createdAt ) {
+    public CartResponseDTO(Long id, Long userId, ProductCartDTO product, Integer quantity ,Date createdAt ) {
         this.id = id;
         this.userId = userId;
         this.product = product;
         this.createdAt = createdAt;
+        this.quantity  = quantity;
     }
 
 
@@ -40,6 +43,10 @@ public class CartResponseDTO {
 
     public ProductCartDTO getProduct() {
         return product;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
     }
 
     public Date getCreatedAt() {
@@ -56,5 +63,9 @@ public class CartResponseDTO {
 
     public void setCreatedAt(Date newDate) {
         this.createdAt = newDate;
+    }
+    
+    public void setQuantity(Integer newQuantity) {
+        this.quantity = newQuantity;
     }
 }
