@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.adrian.eady.cart.Cart;
 import com.adrian.eady.cart.CartRepository;
@@ -47,23 +48,23 @@ public class OrderService {
     }
 
 
-
+    @Transactional 
     public Long createOrder(OrderCreateDTO create){
-        if(create == null) return null;
+        if(create == null) throw new RuntimeException("The order is empty!");
 
         User user = userDb.findById(create.getUserId()).orElse(null);
         
-        if(user == null) return null;
+        if(user == null) throw new RuntimeException("The user dosent exists!");
 
         List<Cart> carts = cartDb.findByUserId(user.getId());
         
-        if(carts.isEmpty()) return null;
+        if(carts.isEmpty()) throw new RuntimeException("The cart is empty!");
 
         List<Long> productsIds = carts.stream().map( item -> item.getProduct().getId() ).toList();
 
         List<Product> products = prodDb.findAllById(productsIds);
         
-        if(!isEnoughStock(carts,products)) return null;
+        if(!isEnoughStock(carts,products)) throw new RuntimeException("The stock is not enough!");
 
         Order order = null;
         String paymentForm = create.getPaymentForm();
@@ -79,16 +80,14 @@ public class OrderService {
         db.save(order);
 
 
-
-
         for(int i = 0; i < carts.size(); i++){
             Cart actualCart = carts.get(i);
 
             OrderItem item = new OrderItem(order ,actualCart.getProduct().getPrice(),actualCart.getProduct(), actualCart.getQuantity());
 
-            Product tempProd = products.stream().filter(product -> product.getId() == actualCart.getProduct().getId()).findFirst().orElse(null);
+            Product tempProd = products.stream().filter(product -> product.getId().equals(actualCart.getProduct().getId())).findFirst().orElse(null);
 
-            if(tempProd == null) return null;
+            if(tempProd == null) throw new RuntimeException("Internal server error!");
 
             tempProd.setStock(tempProd.getStock() - actualCart.getQuantity());
             prodDb.save(tempProd);
@@ -97,9 +96,8 @@ public class OrderService {
             itemDb.save(item);
         }
 
+        cartDb.deleteAll(carts);
         return order.getId();
-
-
     }
 
     public String cancelOrder(Long id) {
