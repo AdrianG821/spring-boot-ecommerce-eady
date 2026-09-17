@@ -26,8 +26,9 @@ public class OrderService {
     private final UserRepository  userDb;
     private final CartRepository  cartDb;
     private final OrderItemRepository itemDb;
+    private final ProductRepository prodDb;
 
-    public OrderService(OrderRepository db, UserRepository userDb, CartRepository cartDb, OrderItemRepository itemDb) { this.db = db;  this.userDb = userDb; this.cartDb = cartDb; this.itemDb = itemDb;}
+    public OrderService(OrderRepository db, UserRepository userDb, CartRepository cartDb, OrderItemRepository itemDb, ProductRepository prodDb) { this.db = db;  this.userDb = userDb; this.cartDb = cartDb; this.itemDb = itemDb; this.prodDb = prodDb;}
     
     public List<OrderResponseDTO> getAllOrders(Long userId) {
 
@@ -47,23 +48,27 @@ public class OrderService {
 
 
 
-    public Integer createOrder(OrderCreateDTO create){
+    public Long createOrder(OrderCreateDTO create){
         if(create == null) return null;
 
         User user = userDb.findById(create.getUserId()).orElse(null);
+        
         if(user == null) return null;
 
         List<Cart> carts = cartDb.findByUserId(user.getId());
+        
+        if(carts.isEmpty()) return null;
+
+        List<Long> productsIds = carts.stream().map( item -> item.getProduct().getId() ).toList();
+
+        List<Product> products = prodDb.findAllById(productsIds);
+        
+        if(!isEnoughStock(carts,products)) return null;
 
         Order order = null;
         String paymentForm = create.getPaymentForm();
         String address = create.getAddress();
         Boolean active = true;
-
-        
-        List<Long> productIds = carts.stream().map(cart -> cart.getProduct().getId()).toList();
-
-        if(productIds.isEmpty()) return null;
 
         
         Double totalPrice = getTotalPrice(carts);
@@ -73,21 +78,26 @@ public class OrderService {
 
         db.save(order);
 
-        for(int i = 0; i < productIds.size(); i++){
-            if(order == null) return null;
 
+
+
+        for(int i = 0; i < carts.size(); i++){
             Cart actualCart = carts.get(i);
-
-            if(actualCart == null) return null;
 
             OrderItem item = new OrderItem(order ,actualCart.getProduct().getPrice(),actualCart.getProduct(), actualCart.getQuantity());
 
-            if(item == null) return null;
+            Product tempProd = products.stream().filter(product -> product.getId() == actualCart.getProduct().getId()).findFirst().orElse(null);
+
+            if(tempProd == null) return null;
+
+            tempProd.setStock(tempProd.getStock() - actualCart.getQuantity());
+            prodDb.save(tempProd);
+
 
             itemDb.save(item);
         }
 
-        return Integer.valueOf(order.getId().intValue());
+        return order.getId();
 
 
     }
@@ -127,5 +137,23 @@ public class OrderService {
         }
 
         return totalPrice;
+    }
+
+    private boolean isEnoughStock(List<Cart> itemsList, List<Product> prod){
+        List<Product> products = prod;
+
+        for(int i = 0; i < itemsList.size(); i++){
+            Cart tempCart = itemsList.get(i);
+            Product tempProd = products.stream().filter(product -> product.getId().equals(tempCart.getProduct().getId())).findFirst().orElse(null);
+
+            if(tempProd == null) return false;
+
+            if(tempCart.getQuantity() > tempProd.getStock()){
+                return false;
+            }
+
+        }
+
+        return true;
     }
 }

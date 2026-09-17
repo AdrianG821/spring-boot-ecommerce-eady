@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.adrian.eady.order.dto.OrderCreateDTO;
 import com.adrian.eady.order.dto.OrderResponseDTO;
 
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -35,7 +37,7 @@ public class OrderController {
     }
 
     @PostMapping("/create/order")
-    public ResponseEntity<Integer> createOrder(@RequestBody OrderCreateDTO create) {
+    public ResponseEntity<Long> createOrder(@Valid @RequestBody OrderCreateDTO create) {
         //TODO: process POST request
         
         return ResponseEntity.ok(service.createOrder(create));
