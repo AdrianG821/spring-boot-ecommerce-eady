@@ -3,9 +3,14 @@ package com.adrian.eady.user;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.adrian.eady.security.JwtService;
+import com.adrian.eady.user.dto.AuthResponseDTO;
 import com.adrian.eady.user.dto.PasswordHashing;
 import com.adrian.eady.user.dto.UserAuthDTO;
 import com.adrian.eady.user.dto.UserCreateDTO;
@@ -16,9 +21,11 @@ import com.adrian.eady.user.dto.UserUpdateDTO;
 public class UserService {
     private final UserRepository db;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authManger;
+    private final JwtService jwtService;
 
 
-    public UserService( UserRepository db, PasswordEncoder passwordEncoder ) { this.db = db; this.passwordEncoder = passwordEncoder;}
+    public UserService( UserRepository db, PasswordEncoder passwordEncoder, AuthenticationManager authManger, JwtService jwtService ) { this.db = db; this.passwordEncoder = passwordEncoder; this.authManger = authManger; this.jwtService = jwtService;}
 
 
     public List<UserResponseDTO> getAllUsers() {
@@ -35,9 +42,9 @@ public class UserService {
 
         User exists             =    db.findByUsernameOrEmail(user.getUsername(), user.getEmail());
 
-        if(exists != null) {
-            return "exists";
-        }
+        // if(exists != null) {
+        //     return "exists";
+        // }
 
         User newUser            =    new User(user.getUsername(), user.getEmail(), passwordHash, "CUSTOMER");
 
@@ -45,26 +52,32 @@ public class UserService {
         return "ok";
     }
 
-    public UserResponseDTO authMethod(UserAuthDTO user) {
+
+
+
+
+
+
+    public AuthResponseDTO authMethod(UserAuthDTO user) {
         if(user.getUsername() == null || user.getPassword() == null){
             return null;
         }
 
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
+
+        Authentication authentication = authManger.authenticate(authenticationToken);
+
+        String token = jwtService.generateToken(authentication);
+
         User exists = db.findByUsername(user.getUsername());
 
-        if(exists == null) {
-            return null;
-        }
-
-        Boolean match = passwordEncoder.matches(user.getPassword(), exists.getPasswordHash());
-
-        if(match){
-            return new UserResponseDTO(exists.getId(),exists.getUsername(),exists.getRole());
-        } else {
-            return null;
-        }
+        return new AuthResponseDTO(exists.getId(),exists.getUsername(),exists.getRole(),token);
         
     }
+
+
+
+    
 
     public UserResponseDTO patchUser(UserUpdateDTO dto) {
         if(dto.getId() == null || dto.getId() == 0) return null;
