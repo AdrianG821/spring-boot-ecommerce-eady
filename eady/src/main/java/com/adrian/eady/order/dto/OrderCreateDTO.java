@@ -1,21 +1,28 @@
 package com.adrian.eady.order.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
 public class OrderCreateDTO {
 
-    
+    @NotBlank 
     private String paymentForm;
+
+    @NotBlank
     private String address;
-    private Double totalPrice;
+
+    @NotNull 
+    @Positive
     private Long userId;
 
     
 
     public OrderCreateDTO() {}
 
-    public OrderCreateDTO(String paymentForm, String address, Double totalPrice,Long userId) {
+    public OrderCreateDTO(String paymentForm, String address,Long userId) {
         this.paymentForm           = paymentForm;
         this.address               = address;
-        this.totalPrice            = totalPrice;
         this.userId                = userId;
     }
 
@@ -28,14 +35,11 @@ public class OrderCreateDTO {
     public String getAddress() {
         return address;
     }
-
-    public Double getTotalPrice() {
-        return totalPrice;
-    }
     
     public Long getUserId() {
         return userId;
     }
+
 
     public void setPaymentForm(String paymentForm){
         this.paymentForm = paymentForm;
@@ -45,11 +49,8 @@ public class OrderCreateDTO {
         this.address = address;
     }
 
-    public void setTotalPrice(double totalPrice){
-        this.totalPrice = totalPrice;
-    }
-
     public void setUserId(Long userId){
         this.userId = userId;
     }
+
 }

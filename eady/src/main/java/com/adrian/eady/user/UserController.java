@@ -3,6 +3,7 @@ package com.adrian.eady.user;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.adrian.eady.user.dto.AuthResponseDTO;
 import com.adrian.eady.user.dto.UserAuthDTO;
 import com.adrian.eady.user.dto.UserCreateDTO;
 import com.adrian.eady.user.dto.UserResponseDTO;
@@ -54,10 +55,10 @@ public class UserController {
     }
 
     @PostMapping("/auth")
-    public ResponseEntity<UserResponseDTO> authMethod(@Valid @RequestBody UserAuthDTO dto) {
+    public ResponseEntity<AuthResponseDTO> authMethod(@Valid @RequestBody UserAuthDTO dto) {
         //TODO: process POST request+
 
-        UserResponseDTO response = service.authMethod(dto);
+        AuthResponseDTO response = service.authMethod(dto);
 
         if(response != null) {
             return ResponseEntity.ok(response);
